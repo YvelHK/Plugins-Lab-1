@@ -1,25 +1,30 @@
 using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PieceManager : MonoBehaviour
 {
     [SerializeField] Piece[] pieces;
-    color[][] grid;
+    Dictionary<Vector2, color> board = new Dictionary<Vector2, color>();
 
-    const float OFFSET = 3.5f;
-    public void Setup()
+    private void OnDrawGizmos()
     {
+        board.Clear();
         foreach (Piece p in pieces)
         {
-            int newX = (int) (Math.Round(p.transform.position.x + 0.5) - 0.5f + OFFSET);
-            int newY = (int)(Math.Round(p.transform.position.y + 0.5) - 0.5f + OFFSET);
-            grid[newX][newY] = p.pieceColor;
+            board.Add(p.transform.position, p.pieceColor);
         }
     }
 
-    public int IsOccupied(Vector2 coords) // Returns 0 for unoccupied, 1 for occupied by ally, and 2 for occupied by enemy
+    public int IsOccupied(Vector2 coords, color pieceColor) // Returns 0 for unoccupied, 1 for occupied by ally, and 2 for occupied by enemy
     {
-        return 0;
+        
+        if (!board.ContainsKey(coords))
+            return 0;
+        color getColor = board[coords];
+        if (getColor == pieceColor)
+            return 1;
+        return 2;
     }
 }
